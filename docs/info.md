@@ -30,3 +30,7 @@ The testbench has 4 tests.
 List external hardware used in your project (e.g. PMOD, LED display, etc), if any
 
 None. Tested all variables with simulator. Would have had STOP and RESET buttons. 
+
+## AI Use
+I had it help with my initial testbench and using github. Here's the conversation.
+https://claude.ai/share/9f1d98b1-4a3e-4a47-bd5f-6cc5940e33fc
