@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module tb_top_level;
+module tb;
 
     reg clk, rst_n, stop;
     wire [7:0] uo_out;
