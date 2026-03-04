@@ -2,25 +2,29 @@
 
 module tb_top_level;
 
-    reg clk, reset, stop;
-    wire [3:0] count;
-    wire win;
+    reg clk, rst_n, stop;
+    wire [7:0] uo_out;
+    wire[3:0] count = uo_out[3:0];
+    wire win = uo_out[4];
 
-    top_level test (
-        .clk_i(clk),
-        .reset_i(reset),
-        .stop_i(stop),
-        .count_o(count),
-        .win_o(win)
+    tt_um_alexijustine_stop_the_clock test_bench (
+        .ui_in({7'b0, stop}),   // stop on bit 0
+        .uo_out(uo_out),
+        .uio_in(8'b0),
+        .uio_out(),
+        .uio_oe(),
+        .ena(1'b1),
+        .clk(clk),
+        .rst_n(rst_n)
     );
 
     // 10ns clock period 5 up/down 
     always #5 clk = ~clk;
 
     initial begin 
-        clk = 0; stop = 0; reset = 1;
+        clk = 0; stop = 0; rst_n = 1;
         #3; 
-        reset = 0;  // reset values
+        rst_n = 0;  // reset values
 
         // **************** lose test ******************************************************
         // goal is 10, stops at 5
@@ -38,9 +42,9 @@ module tb_top_level;
 
         // ****************** win test ******************************************************
         // reset values
-        reset = 1;
+        rst_n = 1;
         #15
-        reset = 0;
+        rst_n = 0;
 
         // stops at target value, 10 clocks
         #90;
@@ -61,9 +65,9 @@ module tb_top_level;
             $display("Stop Test: FAIL - counter kept running after stop, count=%0d", count);
 
         // ********************************** Test reset worked ***************************************
-        reset = 1;
+        rst_n = 1;
         #15;
-        reset = 0;
+        rst_n = 0;
         if (count == 4'd0 && win == 0)
             $display("Reset Test: PASS - count = %0d and win = %0d", count, win);
         else
