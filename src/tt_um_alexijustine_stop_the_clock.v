@@ -27,7 +27,7 @@ module tt_um_alexijustine_stop_the_clock(
     output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
     input  wire       ena,      // always 1 when the design is powered, so you can ignore it
     input  wire       clk,      // clock
-    input  wire       rst_n,     // reset_n - low to reset
+    input  wire       rst_n     // reset_n - low to reset
 );
     //     orig inputs: input clk_i, input reset_i, input stop_i, output [3:0] uo_out[3:0], output win_o
 
