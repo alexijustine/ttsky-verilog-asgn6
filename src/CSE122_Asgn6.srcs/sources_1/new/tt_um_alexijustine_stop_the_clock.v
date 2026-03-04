@@ -60,7 +60,7 @@ counter4 start_count (
 );
 
 // win if player stops at 10
-assign win_o = stopped_w & (uo_out[3:0] == 4'd10);
+assign uo_out[4] = stopped_w & (uo_out[3:0] == 4'd10);
 
 // unused values
 assign uo_out[7:5] = 3'b0; 
