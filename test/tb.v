@@ -1,80 +1,49 @@
+`default_nettype none
 `timescale 1ns / 1ps
 
-module tb;
+/* This testbench just instantiates the module and makes some convenient wires
+   that can be driven / tested by the cocotb test.py.
+*/
+module tb ();
 
-    reg clk, rst_n, stop;
-    wire [7:0] uo_out;
-    wire[3:0] count = uo_out[3:0];
-    wire win = uo_out[4];
+  // Dump the signals to a FST file. You can view it with gtkwave or surfer.
+  initial begin
+    $dumpfile("tb.fst");
+    $dumpvars(0, tb);
+    #1;
+  end
 
-    tt_um_alexijustine_stop_the_clock test_bench (
-        .ui_in({7'b0, stop}),   // stop on bit 0
-        .uo_out(uo_out),
-        .uio_in(8'b0),
-        .uio_out(),
-        .uio_oe(),
-        .ena(1'b1),
-        .clk(clk),
-        .rst_n(rst_n)
-    );
+  // Wire up the inputs and outputs:
+  reg clk;
+  reg rst_n;
+  reg ena;
+  reg [7:0] ui_in;
+  reg [7:0] uio_in;
+  wire [7:0] uo_out;
+  wire [7:0] uio_out;
+  wire [7:0] uio_oe;
+`ifdef GL_TEST
+  wire VPWR = 1'b1;
+  wire VGND = 1'b0;
+`endif
 
-    // 10ns clock period 5 up/down 
-    always #5 clk = ~clk;
+  // Replace tt_um_example with your module name:
+  tt_um_alexijustine_stop_the_clock user_project (
 
-    initial begin 
-        clk = 0; stop = 0; rst_n = 1;
-        #3; 
-        rst_n = 0;  // reset values
+      // Include power ports for the Gate Level test:
+`ifdef GL_TEST
+      .VPWR(VPWR),
+      .VGND(VGND),
+`endif
 
-        // **************** lose test ******************************************************
-        // goal is 10, stops at 5
-        #100        // count starts around here
-        stop = 0;
-        #40
-        stop = 1;
-        #15
-        stop = 0;
-
-        if (count == 4'd5 && win == 0)
-            $display("Lose Test: PASS - correctly stopped at %0d", count);
-        else
-            $display("Lose Test: FAIL - expected stop at 5 and win is 0, actual stop at %0d and win is %0d", count, win);
-
-        // ****************** win test ******************************************************
-        // reset values
-        rst_n = 1;
-        #15
-        rst_n = 0;
-
-        // stops at target value, 10 clocks
-        #90;
-        stop = 1;
-        #15;
-        stop = 0;       // releasing button
-
-        if (count == 4'd10 && win == 1)
-            $display("Win Test: PASS - win = 1 and count = %0d", count);
-        else
-            $display("Win Test: FAIL - expected count = 10 and win = 1, actual count = %0d win = %0d", count, win);
-
-        // ******************************* Test that STOP successfully stopped counter ***************************
-        #50
-        if (count == 4'd10)
-            $display("Stop Test: PASS - counter held at %0d after stop", count);
-        else
-            $display("Stop Test: FAIL - counter kept running after stop, count=%0d", count);
-
-        // ********************************** Test reset worked ***************************************
-        rst_n = 1;
-        #15;
-        rst_n = 0;
-        if (count == 4'd0 && win == 0)
-            $display("Reset Test: PASS - count = %0d and win = %0d", count, win);
-        else
-            $display("Reset Test: FAIL - count=%0d win=%0d", count, win);
-        
-        #50;
-        $finish;
-    end
+      .ui_in  (ui_in),    // Dedicated inputs
+      .uo_out (uo_out),   // Dedicated outputs
+      .uio_in (uio_in),   // IOs: Input path
+      .uio_out(uio_out),  // IOs: Output path
+      .uio_oe (uio_oe),   // IOs: Enable path (active high: 0=input, 1=output)
+      .ena    (ena),      // enable - goes high when design is selected
+      .clk    (clk),      // clock
+      .rst_n  (rst_n)     // not reset
+  );
 
 endmodule
