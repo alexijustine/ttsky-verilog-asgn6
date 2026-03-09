@@ -18,9 +18,9 @@ project:
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
     - "fulladder4.v" # 4bit ripple carry adder used by counter4.v
-    - "addSub8.v" # 4bit adder and subtractor
+    - "addsub8.v" # 4bit adder and subtractor
     - "counter4.v" # 4 bit up/down counter with load and clock enable 
-    - "tb_top_level.v" # test bench
+    - "tt_um_alexijustine_stop_the_clock.v" # top level
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
